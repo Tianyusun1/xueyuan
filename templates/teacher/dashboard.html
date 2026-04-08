@@ -35,15 +35,20 @@
                 <p class="card-text text-muted small" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                     {{ course.description }}
                 </p>
-                <div class="d-flex justify-content-between align-items-center mt-4">
+
+            </div><div class="d-flex justify-content-between align-items-center mt-4">
                     <span class="badge bg-light text-dark border">
                         <i class="bi bi-people-fill"></i> 学员: {{ course.current_students_count }}/{{ course.max_students }}
                     </span>
-                    <a href="{{ url_for('teacher.manage_assignments', course_id=course.id) }}" class="btn btn-outline-dark btn-sm px-3">
-                        进入批改大厅 <i class="bi bi-arrow-right-short"></i>
-                    </a>
+                    <div>
+                        <a href="{{ url_for('teacher.manage_students', course_id=course.id) }}" class="btn btn-outline-primary btn-sm px-2 me-1">
+                            <i class="bi bi-award"></i> 结业管理
+                        </a>
+                        <a href="{{ url_for('teacher.manage_assignments', course_id=course.id) }}" class="btn btn-dark btn-sm px-2">
+                            批改大厅 <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
                 </div>
-            </div>
             {% set course_pending = course.assignments.filter_by(status='pending').count() %}
             {% if course_pending > 0 %}
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="margin-top: 15px; margin-left: -15px;">

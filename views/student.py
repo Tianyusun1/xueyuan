@@ -77,6 +77,20 @@ def enroll_course(course_id):
     flash(f'🎉 支付成功！您已正式加入《{course.title}》课程。', 'success')
     return redirect(url_for('student.dashboard'))
 
+# ==========================================
+# 下方为本次补充的模块：优秀作品展厅（光影画廊）
+# ==========================================
+
+@student_bp.route('/gallery')
+def gallery():
+    """光影画廊（优秀摄影作品展）"""
+    # 核心逻辑：只查状态为已批改，且分数 >= 90 的作品，按分数和时间倒序
+    excellent_works = Assignment.query.filter(
+        Assignment.status == 'graded',
+        Assignment.score >= 90
+    ).order_by(Assignment.score.desc(), Assignment.review_time.desc()).all()
+
+    return render_template('student/gallery.html', works=excellent_works)
 
 @student_bp.route('/course/<int:course_id>/workspace', methods=['GET', 'POST'])
 def workspace(course_id):

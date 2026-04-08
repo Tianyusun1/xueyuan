@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}光影画廊 - 优秀作品展{% endblock %}
+
+{% block content %}
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="p-5 text-center bg-dark text-white rounded-4 shadow-sm" style="background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1554046920-90dc58241724?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'); background-size: cover; background-position: center;">
+            <h1 class="display-4 fw-bold mb-3" style="font-family: 'Times New Roman', Times, serif;"><i>Light & Shadow Gallery</i></h1>
+            <p class="lead mb-0">光影视觉 · 优秀学员作品殿堂 (Top 90+)</p>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold"><i class="bi bi-stars text-warning"></i> 精选佳作</h3>
+    <a href="{{ url_for('student.dashboard') }}" class="btn btn-outline-dark">
+        <i class="bi bi-arrow-left"></i> 返回我的中心
+    </a>
+</div>
+
+<div class="row g-4" data-masonry='{"percentPosition": true }'>
+    {% for work in works %}
+    <div class="col-sm-6 col-lg-4 mb-4">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden text-bg-dark">
+            <img src="{{ url_for('static', filename=work.file_path.replace('static/', '')) }}"
+                 class="card-img"
+                 alt="优秀作品"
+                 style="object-fit: cover; width: 100%; min-height: 250px;">
+            <div class="card-img-overlay d-flex flex-column justify-content-between" style="background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.8));">
+                <div class="text-end">
+                    <span class="badge bg-danger fs-6 shadow-sm"><i class="bi bi-fire"></i> {{ work.score }} 分</span>
+                </div>
+                <div>
+                    <h5 class="card-title fw-bold mb-1 text-white">摄影师：{{ work.student.real_name }}</h5>
+                    <p class="card-text small text-light opacity-75 mb-1">
+                        <i class="bi bi-book"></i> 《{{ work.course.title }}》
+                    </p>
+                    <p class="card-text small text-warning mb-0">
+                        <i class="bi bi-chat-quote-fill"></i> 导师评语：{{ work.feedback[:30] }}...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <div class="text-muted">
+            <i class="bi bi-camera fs-1 d-block mb-3"></i>
+            目前还没有达到 90 分以上的殿堂级作品哦，快去努力创作吧！
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
+{% endblock %}
