@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}学员注册{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 rounded-3 mt-4">
+            <div class="card-header bg-white text-center py-3 border-0">
+                <h4 class="mb-0 text-dark fw-bold">学员注册通道</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('auth.register') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label text-muted">登录账号 (Username)</label>
+                        <input type="text" class="form-control form-control-lg bg-light" id="username" name="username" required placeholder="用于登录系统的英文或数字">
+                    </div>
+                    <div class="mb-3">
+                        <label for="real_name" class="form-label text-muted">真实姓名 (Real Name)</label>
+                        <input type="text" class="form-control form-control-lg bg-light" id="real_name" name="real_name" required placeholder="您的真实姓名">
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label text-muted">设置密码 (Password)</label>
+                        <input type="password" class="form-control form-control-lg bg-light" id="password" name="password" required placeholder="请设置登录密码">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">完成注册</button>
+                    </div>
+                </form>
+                <div class="text-center mt-4">
+                    <span class="text-muted">已有账号？</span>
+                    <a href="{{ url_for('auth.login') }}" class="text-decoration-none fw-bold">返回登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

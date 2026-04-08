@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}作品批改 - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('teacher.dashboard') }}" class="text-decoration-none">工作台</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ course.title }}</li>
+            </ol>
+        </nav>
+        <h2 class="fw-bold"><i class="bi bi-images"></i> 课程作品批改大厅</h2>
+    </div>
+    <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> 返回看板
+    </a>
+</div>
+
+<div class="row">
+    {% for assignment in assignments %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm border-0 h-100 rounded-3 overflow-hidden">
+            <div class="bg-dark text-center position-relative" style="height: 250px; overflow: hidden;">
+                <img src="{{ url_for('static', filename=assignment.file_path.replace('static/', '')) }}" 
+                     alt="学员作品" 
+                     class="img-fluid" 
+                     style="object-fit: contain; width: 100%; height: 100%;">
+                
+                <div class="position-absolute top-0 end-0 p-2">
+                    {% if assignment.status == 'pending' %}
+                        <span class="badge bg-warning text-dark shadow"><i class="bi bi-hourglass-split"></i> 待批改</span>
+                    {% else %}
+                        <span class="badge bg-success shadow"><i class="bi bi-check-circle-fill"></i> 已批改</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="card-title fw-bold mb-0">
+                        <i class="bi bi-person-circle text-muted"></i> 学员：{{ assignment.student.real_name }}
+                    </h6>
+                    <small class="text-muted">{{ assignment.submit_time.strftime('%Y-%m-%d %H:%M') }}</small>
+                </div>
+
+                <hr class="text-muted opacity-25">
+
+                {% if assignment.status == 'pending' %}
+                    <form action="{{ url_for('teacher.grade_assignment', assignment_id=assignment.id) }}" method="POST">
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">作品打分 (0-100)</label>
+                            <input type="number" name="score" class="form-control form-control-sm" min="0" max="100" required placeholder="请输入分数">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">导师寄语/改进建议</label>
+                            <textarea name="feedback" class="form-control form-control-sm" rows="2" required placeholder="例如：构图不错，但高光部分略有溢出..."></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-dark btn-sm">提交评审结果</button>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="bg-light p-3 rounded-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small fw-bold">导师评分：</span>
+                            <span class="fs-4 fw-bold text-danger">{{ assignment.score }} <small class="fs-6 text-muted">分</small></span>
+                        </div>
+                        <p class="small text-muted mb-0">
+                            <strong>导师寄语：</strong><br>
+                            {{ assignment.feedback }}
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <div class="text-muted">
+            <i class="bi bi-camera fs-1 d-block mb-3"></i>
+            目前还没有学员提交本课程的摄影作品哦。
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

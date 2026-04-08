@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}导师工作台{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="fw-bold"><i class="bi bi-easel"></i> 导师教学工作台</h2>
+        <p class="text-muted">欢迎回来，{{ current_user.real_name }} 导师。以下是您的教学班级与任务。</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        {% if pending_count > 0 %}
+        <div class="alert alert-warning py-2 mb-0 d-inline-block shadow-sm" role="alert">
+            <i class="bi bi-bell-fill"></i> 您有 <strong>{{ pending_count }}</strong> 份学员作品待批改！
+        </div>
+        {% else %}
+        <div class="alert alert-success py-2 mb-0 d-inline-block shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill"></i> 太棒了！所有作业均已批改完毕。
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <h5 class="fw-bold mb-3">我的教学班级</h5>
+    </div>
+    
+    {% for course in courses %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm border-0 rounded-3 position-relative">
+            <div class="bg-dark rounded-top-3" style="height: 8px;"></div>
+            <div class="card-body mt-2">
+                <h5 class="card-title fw-bold">{{ course.title }}</h5>
+                <p class="card-text text-muted small" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                    {{ course.description }}
+                </p>
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <span class="badge bg-light text-dark border">
+                        <i class="bi bi-people-fill"></i> 学员: {{ course.current_students_count }}/{{ course.max_students }}
+                    </span>
+                    <a href="{{ url_for('teacher.manage_assignments', course_id=course.id) }}" class="btn btn-outline-dark btn-sm px-3">
+                        进入批改大厅 <i class="bi bi-arrow-right-short"></i>
+                    </a>
+                </div>
+            </div>
+            {% set course_pending = course.assignments.filter_by(status='pending').count() %}
+            {% if course_pending > 0 %}
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="margin-top: 15px; margin-left: -15px;">
+                {{ course_pending }}
+                <span class="visually-hidden">未批改</span>
+            </span>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <div class="text-muted">
+            <i class="bi bi-folder-x fs-1 d-block mb-3"></i>
+            目前您还没有被分配任何教学课程，请联系管理员排课。
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

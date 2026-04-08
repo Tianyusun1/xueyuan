@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}系统登录{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 rounded-3 mt-5">
+            <div class="card-header bg-white text-center py-3 border-0">
+                <h4 class="mb-0 text-dark fw-bold">系统登录</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('auth.login') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label text-muted">账号</label>
+                        <input type="text" class="form-control form-control-lg bg-light" id="username" name="username" required placeholder="请输入用户名">
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label text-muted">密码</label>
+                        <input type="password" class="form-control form-control-lg bg-light" id="password" name="password" required placeholder="请输入密码">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-dark btn-lg">登 录</button>
+                    </div>
+                </form>
+                <div class="text-center mt-4">
+                    <span class="text-muted">还没有账号？</span>
+                    <a href="{{ url_for('auth.register') }}" class="text-decoration-none fw-bold text-dark">立即注册 (仅限学员)</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

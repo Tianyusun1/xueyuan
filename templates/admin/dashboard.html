@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}管理员总控台{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="fw-bold">📊 机构运营数据看板</h2>
+        <p class="text-muted">欢迎回来，超级管理员。以下是摄影机构的实时运营数据。</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary shadow-sm border-0 rounded-3 mb-3">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-people-fill"></i> 在校学员总数</h6>
+                <h2 class="display-5 fw-bold">{{ total_students }}</h2>
+                <small>名注册学生</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success shadow-sm border-0 rounded-3 mb-3">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-cash-stack"></i> 历史总营收</h6>
+                <h2 class="display-5 fw-bold">¥ {{ total_revenue }}</h2>
+                <small>来自学员选课缴费</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info shadow-sm border-0 rounded-3 mb-3">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-camera-reels-fill"></i> 活跃课程数</h6>
+                <h2 class="display-5 fw-bold">{{ total_courses }}</h2>
+                <small>门摄影专业课程</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning shadow-sm border-0 rounded-3 mb-3">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-person-badge"></i> 师资团队</h6>
+                <h2 class="display-5 fw-bold">{{ total_teachers }}</h2>
+                <small>名专业导师</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-white border-0 pt-3">
+                <h5 class="fw-bold">🔥 热门课程报名排行 (Top 5)</h5>
+            </div>
+            <div class="card-body">
+                <div id="courseChart" style="width: 100%; height: 350px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 rounded-3 h-100">
+            <div class="card-header bg-white border-0 pt-3">
+                <h5 class="fw-bold">⚡ 教学动态与操作</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger" role="alert">
+                    <strong>待处理警告：</strong><br>
+                    全系统当前有 <strong>{{ pending_assignments }}</strong> 份学员摄影作品尚未被导师批改！
+                </div>
+                
+                <hr>
+                <h6 class="text-muted mb-3">快捷管理通道</h6>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('admin.manage_courses') }}" class="btn btn-outline-primary"><i class="bi bi-book"></i> 课程资源管理</a>
+                    <a href="{{ url_for('admin.manage_teachers') }}" class="btn btn-outline-secondary"><i class="bi bi-person-plus"></i> 教师账号分配</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+    // 在页面加载完成后初始化图表
+    document.addEventListener("DOMContentLoaded", function() {
+        // 基于准备好的 dom，初始化 echarts 实例
+        var myChart = echarts.init(document.getElementById('courseChart'));
+
+        // 利用 Jinja2 模板引擎将 Python 里的数据安全地灌入 JavaScript 数组
+        var courseNames = [
+            {% for course in popular_courses %}
+                "{{ course.title }}"{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+        
+        var studentCounts = [
+            {% for course in popular_courses %}
+                {{ course.student_count }}{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        // 指定图表的配置项和数据
+        var option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                name: '报名人数',
+                minInterval: 1 // 保证人数是整数
+            },
+            yAxis: {
+                type: 'category',
+                data: courseNames.reverse(), // 反转数组，让最多的排在最上面
+                axisLabel: {
+                    interval: 0, // 强制显示所有标签
+                }
+            },
+            series: [
+                {
+                    name: '选课人数',
+                    type: 'bar',
+                    data: studentCounts.reverse(),
+                    itemStyle: {
+                        color: '#4e73df', // 设置一个好看的科技蓝
+                        borderRadius: [0, 4, 4, 0] // 柱子右侧圆角
+                    },
+                    label: {
+                        show: true,
+                        position: 'right' // 在柱子右侧显示具体数字
+                    }
+                }
+            ]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+        
+        // 让图表跟随窗口大小自适应缩放
+        window.addEventListener('resize', function() {
+            myChart.resize();
+        });
+    });
+</script>
+{% endblock %}

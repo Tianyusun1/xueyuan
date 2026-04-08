@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}学员学习中心{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2 class="fw-bold"><i class="bi bi-person-workspace"></i> 我的学习中心</h2>
+        <p class="text-muted">加油，{{ current_user.real_name }}！今天也是磨练摄影技术的好日子。</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('student.course_market') }}" class="btn btn-dark shadow-sm">
+            <i class="bi bi-plus-lg"></i> 探索更多摄影课
+        </a>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-light p-3 text-center">
+            <h6 class="text-muted small text-uppercase fw-bold">已报课程</h6>
+            <h2 class="fw-bold mb-0">{{ enrollments|length }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-light p-3 text-center">
+            <h6 class="text-muted small text-uppercase fw-bold">待批改作品</h6>
+            {% set pending_count = assignments|selectattr('status', 'equalto', 'pending')|list|length %}
+            <h2 class="fw-bold mb-0 text-warning">{{ pending_count }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-light p-3 text-center">
+            <h6 class="text-muted small text-uppercase fw-bold">已获导师评价</h6>
+            {% set graded_count = assignments|selectattr('status', 'equalto', 'graded')|list|length %}
+            <h2 class="fw-bold mb-0 text-success">{{ graded_count }}</h2>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <h5 class="fw-bold mb-4">正在进行的课程</h5>
+        {% for enrollment in enrollments %}
+        <div class="card border-0 shadow-sm rounded-4 mb-3 overflow-hidden">
+            <div class="row g-0">
+                <div class="col-md-2 bg-dark d-flex align-items-center justify-content-center">
+                    <i class="bi bi-camera-reels text-white fs-1 opacity-25"></i>
+                </div>
+                <div class="col-md-10">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title fw-bold mb-0">{{ enrollment.course.title }}</h5>
+                            <span class="badge bg-light text-dark border">导师：{{ enrollment.course.teacher.real_name }}</span>
+                        </div>
+                        <p class="card-text text-muted small mb-3">报名时间：{{ enrollment.enroll_time.strftime('%Y-%m-%d') }}</p>
+                        <div class="d-flex justify-content-end">
+                            <a href="{{ url_for('student.workspace', course_id=enrollment.course.id) }}" class="btn btn-dark btn-sm px-4 rounded-pill">
+                                进入学习空间 <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5 border rounded-4 bg-white">
+            <p class="text-muted">您还没有报名任何课程，快去大厅看看吧！</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="col-lg-4">
+        <h5 class="fw-bold mb-4">最近导师点评</h5>
+        <div class="list-group list-group-flush shadow-sm rounded-4 overflow-hidden">
+            {% for assignment in assignments if assignment.status == 'graded' %}
+            <div class="list-group-item p-3 border-0 border-bottom">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-danger">得分：{{ assignment.score }}</span>
+                    <small class="text-muted">{{ assignment.review_time.strftime('%m-%d') }}</small>
+                </div>
+                <p class="small text-dark fw-bold mb-1">《{{ assignment.course.title }}》作业反馈：</p>
+                <p class="small text-muted mb-0 text-truncate">{{ assignment.feedback }}</p>
+            </div>
+            {% else %}
+            <div class="list-group-item text-center py-4 text-muted small">
+                暂无批改反馈。
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
