@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}财务与订单明细{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold"><i class="bi bi-receipt"></i> 财务流水与订单明细</h2>
+        <p class="text-muted mb-0">记录全站所有学员的选课与支付流水</p>
+    </div>
+    <div class="text-end">
+        <h5 class="mb-0 text-muted">历史总营收</h5>
+        <h3 class="text-success fw-bold mb-0">¥ {{ enrollments|map(attribute='amount_paid')|sum }}</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">交易时间</th>
+                                <th>学员姓名</th>
+                                <th>购买课程</th>
+                                <th>实付金额</th>
+                                <th class="text-center">课程状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in enrollments %}
+                            <tr>
+                                <td class="ps-4 text-muted">{{ record.enroll_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    <span class="fw-bold"><i class="bi bi-person-circle text-muted"></i> {{ record.student.real_name }}</span>
+                                </td>
+                                <td>
+                                    《{{ record.course.title }}》<br>
+                                    <small class="text-muted">导师: {{ record.course.teacher.real_name }}</small>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success">+ ¥ {{ record.amount_paid }}</span>
+                                </td>
+                                <td class="text-center">
+                                    {% if record.status == 'learning' %}
+                                        <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> 学习中</span>
+                                    {% else %}
+                                        <span class="badge bg-success"><i class="bi bi-check-circle-fill"></i> 已结业</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                    暂无任何财务流水记录。
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

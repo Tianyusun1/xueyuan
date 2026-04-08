@@ -72,5 +72,37 @@ def grade_assignment(assignment_id):
     db.session.commit()
     flash('✅ 作品批改完成，分数已录入系统！', 'success')
 
-    # 批改完后，重定向回该课程的作业列表页
     return redirect(url_for('teacher.manage_assignments', course_id=assignment.course_id))
+
+
+# ==========================================
+# 下方为本次补充的模块：学员进度管理与结业审批
+# ==========================================
+
+@teacher_bp.route('/course/<int:course_id>/students')
+def manage_students(course_id):
+    """查看并管理某门课程下的所有学员（结业操作）"""
+    course = Course.query.get_or_404(course_id)
+
+    if course.teacher_id != current_user.id and not current_user.is_admin:
+        abort(403)
+
+    # 获取这门课的所有报名记录
+    enrollments = Enrollment.query.filter_by(course_id=course_id).order_by(Enrollment.enroll_time.desc()).all()
+    return render_template('teacher/students.html', course=course, enrollments=enrollments)
+
+
+@teacher_bp.route('/enrollment/<int:enrollment_id>/graduate', methods=['POST'])
+def graduate_student(enrollment_id):
+    """将某个学员标记为正式结业"""
+    enrollment = Enrollment.query.get_or_404(enrollment_id)
+
+    if enrollment.course.teacher_id != current_user.id and not current_user.is_admin:
+        abort(403)
+
+    # 改变状态为结业
+    enrollment.status = 'graduated'
+    db.session.commit()
+
+    flash(f'🎉 操作成功！已批准学员 {enrollment.student.real_name} 顺利结业。', 'success')
+    return redirect(url_for('teacher.manage_students', course_id=enrollment.course_id))

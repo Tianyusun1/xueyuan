@@ -75,6 +75,10 @@ class Enrollment(db.Model):
     amount_paid = db.Column(db.Float, nullable=False)  # 实际支付金额
     enroll_time = db.Column(db.DateTime, default=datetime.utcnow)  # 报名时间，用于做营收折线图
 
+    # 【本次新增字段】用于跟踪学员的培训周期状态
+    # 状态取值：'learning' (学习中), 'graduated' (已结业)
+    status = db.Column(db.String(20), default='learning')
+
 
 class Assignment(db.Model):
     """学员摄影作品流转表"""

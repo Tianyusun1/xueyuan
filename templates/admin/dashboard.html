@@ -72,12 +72,14 @@
                     全系统当前有 <strong>{{ pending_assignments }}</strong> 份学员摄影作品尚未被导师批改！
                 </div>
                 
-                <hr>
-                <h6 class="text-muted mb-3">快捷管理通道</h6>
-                <div class="d-grid gap-2">
-                    <a href="{{ url_for('admin.manage_courses') }}" class="btn btn-outline-primary"><i class="bi bi-book"></i> 课程资源管理</a>
-                    <a href="{{ url_for('admin.manage_teachers') }}" class="btn btn-outline-secondary"><i class="bi bi-person-plus"></i> 教师账号分配</a>
-                </div>
+            <hr>
+            <h6 class="text-muted mb-3">快捷管理通道</h6>
+            <div class="d-grid gap-2">
+                <a href="{{ url_for('admin.manage_courses') }}" class="btn btn-outline-primary"><i class="bi bi-book"></i> 课程资源管理</a>
+                <a href="{{ url_for('admin.manage_teachers') }}" class="btn btn-outline-secondary"><i class="bi bi-person-plus"></i> 教师账号分配</a>
+                <a href="{{ url_for('admin.manage_students') }}" class="btn btn-outline-dark"><i class="bi bi-people"></i> 学员名单管理</a>
+                <a href="{{ url_for('admin.manage_finances') }}" class="btn btn-outline-success"><i class="bi bi-receipt"></i> 财务流水查看</a>
+            </div>
             </div>
         </div>
     </div>
