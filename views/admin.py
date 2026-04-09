@@ -101,3 +101,20 @@ def manage_teachers():
     # GET 请求：展示所有教师
     teachers = User.query.filter_by(role='teacher').order_by(User.created_at.desc()).all()
     return render_template('admin/teachers.html', teachers=teachers)
+
+
+@admin_bp.route('/students')
+def manage_students():
+    """学员名单管理"""
+    # 获取所有角色为 student 的用户，按加入时间降序排列
+    students = User.query.filter_by(role='student').order_by(User.created_at.desc()).all()
+    return render_template('admin/students.html', students=students)
+
+
+@admin_bp.route('/finances')
+def manage_finances():
+    """财务流水查看（对应 dashboard 的财务入口）"""
+    # 获取所有选课记录，包含支付信息
+    # 【已修复】：将 enrolled_at 改为了 models.py 中实际定义的 enroll_time
+    enrollments = Enrollment.query.order_by(Enrollment.enroll_time.desc()).all()
+    return render_template('admin/finances.html', enrollments=enrollments)
